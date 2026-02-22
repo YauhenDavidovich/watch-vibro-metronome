@@ -26,11 +26,19 @@ struct ContentView: View {
 
                 HStack {
                     ForEach(presets, id: \.self) { p in
-                        Button("\(p)") { engine.updateTempo(p) }
-                            .buttonStyle(.bordered)
-                            .font(.caption2)
+                        Button("\(p)") {
+                            engine.updateTempo(p)
+                            engine.resetTapTempo()
+                        }
+                        .buttonStyle(.bordered)
+                        .font(.caption2)
                     }
                 }
+
+                Button("🥁 Tap Tempo") {
+                    engine.tapTempo()
+                }
+                .buttonStyle(.borderedProminent)
 
                 Picker("Размер", selection: Binding(
                     get: { engine.beatsPerBar },

@@ -10,6 +10,9 @@ final class MetronomeEngine: ObservableObject {
     private var timer: DispatchSourceTimer?
     private let queue = DispatchQueue(label: "metronome.engine.queue", qos: .userInteractive)
 
+    private var tapTimes: [Date] = []
+    private let tapWindowSeconds: TimeInterval = 2.5
+
     func start() {
         guard !isRunning else { return }
         isRunning = true
@@ -36,6 +39,30 @@ final class MetronomeEngine: ObservableObject {
     func updateBeatsPerBar(_ beats: Int) {
         beatsPerBar = max(1, beats)
         currentBeat = 0
+    }
+
+    func tapTempo() {
+        let now = Date()
+        tapTimes.append(now)
+        tapTimes = tapTimes.filter { now.timeIntervalSince($0) <= tapWindowSeconds }
+
+        guard tapTimes.count >= 2 else { return }
+
+        var intervals: [TimeInterval] = []
+        for i in 1..<tapTimes.count {
+            intervals.append(tapTimes[i].timeIntervalSince(tapTimes[i - 1]))
+        }
+
+        guard !intervals.isEmpty else { return }
+        let avg = intervals.reduce(0, +) / Double(intervals.count)
+        guard avg > 0.2, avg < 2.0 else { return } // ~30...300 BPM safety
+
+        let estimated = Int(round(60.0 / avg))
+        updateTempo(estimated)
+    }
+
+    func resetTapTempo() {
+        tapTimes.removeAll()
     }
 
     private func scheduleTimer() {

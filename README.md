@@ -8,6 +8,7 @@ Apple Watch metronome (watchOS 10+) with **haptic-only** feedback.
 - Start / Stop
 - Strong beat accent (strong haptic on beat 1, light haptic on others)
 - Preset BPM buttons
+- Tap Tempo (настучи нужный ритм вручную)
 
 ## Create project in Xcode
 1. Open Xcode → **File → New Project → watchOS App**
